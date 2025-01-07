@@ -1,6 +1,7 @@
 import logging
 from typing import Optional, List, Dict
 from supabase import Client
+from ..types.screen import ScreenType
 
 logger = logging.getLogger(__name__)
 
@@ -163,4 +164,32 @@ class DatabaseService:
             
         except Exception as e:
             logger.error(f"Error getting analysis by URL: {str(e)}")
+            raise 
+
+    async def get_analyses_by_type(self, section_type: ScreenType, limit: Optional[int] = None):
+        """Get all analyses of a specific type"""
+        try:
+            query = self.supabase.table('relative_screen').select('*').eq('section', section_type)
+            
+            if limit:
+                query = query.limit(limit)
+                
+            response = query.execute()
+            return response.data
+            
+        except Exception as e:
+            logger.error(f"Error getting analyses by type: {str(e)}")
+            raise
+
+    async def update_analysis_embedding(self, analysis_id: int, layout_embedding: List[float]):
+        """Update layout embedding for a specific analysis"""
+        try:
+            response = self.supabase.table('relative_screen')\
+                .update({'layout_embedding': layout_embedding})\
+                .eq('id', analysis_id)\
+                .execute()
+            return response.data
+            
+        except Exception as e:
+            logger.error(f"Error updating analysis embedding: {str(e)}")
             raise 

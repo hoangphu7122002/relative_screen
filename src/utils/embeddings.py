@@ -1,4 +1,5 @@
 import os
+import json
 import logging
 from typing import List, Dict
 from openai import OpenAI
@@ -24,36 +25,18 @@ class EmbeddingProcessor:
             logger.error(f"Error creating embedding: {str(e)}")
             raise
 
-    def format_layout_data(self, layout_data: Dict) -> str:
-        """Convert layout JSON to text format for effective embedding"""
-        text_parts = []
-        
-        # Format rows
-        for row in layout_data.get("rows", []):
-            row_index = row.get("rowIndex")
-            text_parts.append(f"Row {row_index}:")
-            
-            # Format content in each row
-            for content in row.get("content", []):
-                position = content.get("position", "")
-                name = content.get("name", "")
-                text = content.get("text", "")
-                title = content.get("title", "")
-                links = content.get("links", [])
-                
-                if text:
-                    text_parts.append(f"  {position} {name}: {text}")
-                if title:
-                    text_parts.append(f"  {position} {name} title: {title}")
-                if links:
-                    text_parts.append(f"  {position} {name} links: {', '.join(links)}")
-        
-        return "\n".join(text_parts)
+    def _format_json_string(self, layout_data: Dict) -> str:
+        """Convert layout JSON to formatted string"""
+        try:
+            return json.dumps(layout_data, indent=2)
+        except Exception as e:
+            logger.error(f"Error formatting JSON string: {str(e)}")
+            return str(layout_data)
 
     async def get_layout_embedding(self, layout_data: Dict) -> List[float]:
         """Create embedding for layout data using OpenAI API"""
-        # Convert layout data to text format
-        layout_text = self.format_layout_data(layout_data)
+        # Convert layout data to JSON string
+        layout_text = self._format_json_string(layout_data)
         
         # Create embedding
         return self._create_embedding(layout_text) 

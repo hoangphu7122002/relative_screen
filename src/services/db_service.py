@@ -21,7 +21,7 @@ class DatabaseService:
                 if 'relation "relative_screen" does not exist' not in str(e):
                     raise e
 
-            # Create table
+            # Execute SQL to create table
             sql = """
             -- Enable vector extension if not exists
             create extension if not exists vector;
@@ -34,35 +34,21 @@ class DatabaseService:
                 site_url text not null,
                 img_url text not null,
                 layout_embedding vector(1536),
-                color_embedding vector(768),
+                color_embedding vector(512),
                 layout_data jsonb,
                 created_at timestamp with time zone default timezone('utc'::text, now()),
                 updated_at timestamp with time zone default timezone('utc'::text, now())
             );
 
-            -- Create indexes
+            -- Create indexes for efficient querying
             create index relative_screen_screen_id_idx on relative_screen(screen_id);
             create index relative_screen_section_idx on relative_screen(section);
             create index relative_screen_site_url_idx on relative_screen(site_url);
             create index relative_screen_layout_embedding_idx on relative_screen using ivfflat (layout_embedding vector_cosine_ops);
             create index relative_screen_color_embedding_idx on relative_screen using ivfflat (color_embedding vector_cosine_ops);
-
-            -- Add updated_at trigger
-            create or replace function update_updated_at_column()
-            returns trigger as $$
-            begin
-                new.updated_at = timezone('utc'::text, now());
-                return new;
-            end;
-            $$ language plpgsql;
-
-            create trigger update_relative_screen_updated_at
-                before update on relative_screen
-                for each row
-                execute function update_updated_at_column();
             """
             
-            # Thực thi SQL để tạo bảng
+            # Execute SQL
             self.supabase.query(sql).execute()
             logger.info("Created relative_screen table successfully")
             return True

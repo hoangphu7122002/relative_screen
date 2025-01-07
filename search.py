@@ -11,6 +11,7 @@ import traceback
 from src.services.footer_service import FooterService
 from src.types.screen import SearchOptions, ScreenAnalysis
 from src.services.db_service import DatabaseService
+from src.services.gemini_service import GeminiService
 
 # Configure logging
 logging.basicConfig(
@@ -25,8 +26,9 @@ load_dotenv()
 # Configuration
 SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
-if not all([SUPABASE_URL, SUPABASE_KEY]):
+if not all([SUPABASE_URL, SUPABASE_KEY, GEMINI_API_KEY]):
     logger.error("Missing required environment variables. Please check .env file")
     sys.exit(1)
 
@@ -47,6 +49,12 @@ async def search_similar_footers(
         if not target_analysis:
             logger.error(f"Analysis not found for: {target_url}")
             return
+        
+        # Convert string embeddings to list
+        if isinstance(target_analysis['layout_embedding'], str):
+            target_analysis['layout_embedding'] = eval(target_analysis['layout_embedding'])
+        if isinstance(target_analysis['color_embedding'], str):
+            target_analysis['color_embedding'] = eval(target_analysis['color_embedding'])
         
         target_screen = ScreenAnalysis(**target_analysis)
         
@@ -95,7 +103,8 @@ async def main(
         
         # Initialize services
         db_service = DatabaseService(supabase)
-        footer_service = FooterService()
+        gemini_service = GeminiService(GEMINI_API_KEY)
+        footer_service = FooterService(gemini_service=gemini_service, db_service=db_service)
         
         # Search
         await search_similar_footers(
@@ -116,15 +125,15 @@ async def main(
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Footer similarity search tool')
-    parser.add_argument('target_url', help='URL of the target footer screenshot')
+    parser.add_argument('--target_url', help='URL of the target footer screenshot')
     parser.add_argument('--no-layout', action='store_true',
                        help='Disable layout similarity search')
     parser.add_argument('--no-color', action='store_true',
                        help='Disable color similarity search')
-    parser.add_argument('--weight-layout', type=float, default=0.6,
-                       help='Weight for layout similarity (default: 0.6)')
-    parser.add_argument('--weight-color', type=float, default=0.4,
-                       help='Weight for color similarity (default: 0.4)')
+    parser.add_argument('--weight-layout', type=float, default=0.7,
+                       help='Weight for layout similarity (default: 0.7)')
+    parser.add_argument('--weight-color', type=float, default=0.3,
+                       help='Weight for color similarity (default: 0.3)')
     parser.add_argument('--limit', type=int, default=5,
                        help='Maximum number of results to show (default: 5)')
     return parser.parse_args()

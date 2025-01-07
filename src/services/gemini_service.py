@@ -26,7 +26,7 @@ class GeminiService:
         )
 
     def _download_image(self, url: str) -> Optional[Image.Image]:
-        """Downloads image and returns PIL Image"""
+        """Downloads image and returns PIL Image object"""
         try:
             response = requests.get(url)
             response.raise_for_status()

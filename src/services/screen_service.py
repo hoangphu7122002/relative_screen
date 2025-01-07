@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 from ..types.screen import ScreenType, ScreenAnalysis, SearchOptions, SearchResult
 from ..utils.embeddings import EmbeddingProcessor
 from ..utils.color_histogram import get_color_histogram_embedding
-from ..utils.similarity import calculate_cosine_similarity
+from ..utils.similarity import calculate_cosine_similarity, calculate_histogram_similarity
 from .base_service import BaseScreenService
 from .gemini_service import GeminiService
 import logging
@@ -70,24 +70,47 @@ class ScreenService(BaseScreenService):
         # Get all screens of same type from database
         screens = await self.db_service.get_screens_by_type(self.screen_type)
         
-        for screen in screens:
+        for screen_data in screens:
+            # Skip if this is the target screen
+            if screen_data['img_url'] == target_screen.img_url:
+                continue
+                
+            # Convert string embeddings to list
+            if isinstance(screen_data['layout_embedding'], str):
+                screen_data['layout_embedding'] = eval(screen_data['layout_embedding'])
+            if isinstance(screen_data['color_embedding'], str):
+                screen_data['color_embedding'] = eval(screen_data['color_embedding'])
+            
+            screen = ScreenAnalysis(**screen_data)
             final_score = 0
             layout_score = None
             color_score = None
+            num_enabled_features = 0
             
             if options.search_layout:
                 layout_score = calculate_cosine_similarity(
                     target_screen.layout_embedding,
                     screen.layout_embedding
                 )
-                final_score += layout_score * options.weight_layout
+                final_score += layout_score
+                num_enabled_features += 1
                 
             if options.search_color:
-                color_score = calculate_cosine_similarity(
+                color_score = calculate_histogram_similarity(
                     target_screen.color_embedding,
                     screen.color_embedding
                 )
-                final_score += color_score * options.weight_color
+                final_score += color_score
+                num_enabled_features += 1
+            
+            # Calculate average score instead of weighted sum
+            if num_enabled_features > 0:
+                final_score = final_score / num_enabled_features
+                
+                # Apply weights only if both features are enabled
+                if num_enabled_features == 2:
+                    final_score = (layout_score * options.weight_layout + 
+                                 color_score * options.weight_color)
                 
             results.append(SearchResult(
                 screen=screen,

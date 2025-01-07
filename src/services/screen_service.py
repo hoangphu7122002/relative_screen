@@ -5,6 +5,7 @@ from ..utils.color_histogram import get_color_histogram_embedding
 from ..utils.similarity import calculate_cosine_similarity, calculate_histogram_similarity
 from .base_service import BaseScreenService
 from .gemini_service import GeminiService
+from .db_service import DatabaseService
 import logging
 
 logger = logging.getLogger(__name__)
@@ -12,8 +13,8 @@ logger = logging.getLogger(__name__)
 class ScreenService(BaseScreenService):
     """Generic service for handling different screen types"""
     
-    def __init__(self, screen_type: ScreenType, gemini_service: GeminiService, db_service):
-        self.screen_type = screen_type
+    def __init__(self, section: ScreenType, gemini_service: Optional[GeminiService] = None, db_service: Optional[DatabaseService] = None):
+        self.section = section
         self.gemini_service = gemini_service
         self.db_service = db_service
         self.embedding_processor = EmbeddingProcessor()
@@ -22,7 +23,7 @@ class ScreenService(BaseScreenService):
         """Analyze layout using Gemini Vision API"""
         layout_data = await self.gemini_service.analyze_layout(
             img_url=img_url,
-            screen_type=self.screen_type
+            screen_type=self.section
         )
         if layout_data is None:
             raise Exception("Failed to analyze layout")
@@ -48,7 +49,7 @@ class ScreenService(BaseScreenService):
             
             # Create and return analysis
             return ScreenAnalysis(
-                section=self.screen_type,
+                section=self.section,
                 site_url=site_url,
                 img_url=img_url,
                 layout_embedding=layout_embedding,
@@ -68,7 +69,7 @@ class ScreenService(BaseScreenService):
         results = []
         
         # Get all screens of same type from database
-        screens = await self.db_service.get_screens_by_type(self.screen_type)
+        screens = await self.db_service.get_screens_by_type(self.section)
         
         for screen_data in screens:
             # Skip if this is the target screen

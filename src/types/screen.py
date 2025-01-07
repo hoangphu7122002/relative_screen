@@ -7,7 +7,7 @@ class ScreenType(str, Enum):
     HEADER = "header"
     FAQ = "faq"
     PRICING = "pricing"
-    ABOVE_THE_FOLD = "above_the_fold"
+    ABOVE_THE_FOLD = "above the fold"
 
 class ScreenAnalysis(BaseModel):
     id: Optional[int] = None

@@ -1,17 +1,16 @@
 import os
 import sys
-import json
 import logging
 from dotenv import load_dotenv
-import google.generativeai as genai
 from supabase import create_client
 from typing import Optional, Union
 import argparse
 import traceback
 
-from src.services.footer_service import FooterService
 from src.services.db_service import DatabaseService
 from src.services.gemini_service import GeminiService
+from src.services.service_factory import ServiceFactory
+from src.types.screen import ScreenType
 
 # Configure logging
 logging.basicConfig(
@@ -33,7 +32,7 @@ if not all([SUPABASE_URL, SUPABASE_KEY, GEMINI_API_KEY, OPENAI_API_KEY]):
     logger.error("Missing required environment variables. Please check .env file")
     sys.exit(1)
 
-async def main(max_items: Union[int, str] = 5):
+async def main(section: str, max_items: Union[int, str] = 5):
     """Main execution function"""
     try:
         # Initialize clients
@@ -42,14 +41,25 @@ async def main(max_items: Union[int, str] = 5):
         # Initialize services
         db_service = DatabaseService(supabase)
         gemini_service = GeminiService(GEMINI_API_KEY)
-        footer_service = FooterService(gemini_service=gemini_service, db_service=db_service)
+        
+        # Get appropriate service based on section
+        try:
+            section_type = ScreenType(section)
+            service = ServiceFactory.get_service(
+                section_type,
+                gemini_service=gemini_service,
+                db_service=db_service
+            )
+        except ValueError as e:
+            logger.error(f"Invalid section type: {section}")
+            return
         
         # Create table if needed
         if not db_service.create_screen_section_analysis_table():
             return
         
         # Get unprocessed screenshots
-        data = await db_service.get_unprocessed_screenshots('footer', None if max_items == 'all' else max_items)
+        data = await db_service.get_unprocessed_screenshots(section, None if max_items == 'all' else max_items)
         
         if not data:
             logger.info("No unprocessed screenshots found")
@@ -61,15 +71,15 @@ async def main(max_items: Union[int, str] = 5):
         for idx, item in enumerate(data, 1):
             try:
                 logger.info(f"Processing {idx}/{len(data)}: {item['img_url']}")
-                analysis = await footer_service.analyzeAndStore(
+                analysis = await service.analyzeAndStore(
                     img_url=item["img_url"],
                     site_url=item["site_url"]
                 )
-                if analysis:  # Only store if analysis was successful
+                if analysis:
                     await db_service.mark_as_processed(
                         item["screen_id"],
                         {
-                            "section": "footer",
+                            "section": section,
                             "site_url": item["site_url"],
                             "img_url": item["original_img_url"],
                             "layout_embedding": analysis.layout_embedding,
@@ -90,7 +100,9 @@ async def main(max_items: Union[int, str] = 5):
         sys.exit(1)
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Footer screenshot analysis and labeling tool')
+    parser = argparse.ArgumentParser(description='Screenshot analysis and labeling tool')
+    parser.add_argument('--section', type=str, required=True,
+                       help='Section type to process (footer, above the fold, etc)')
     parser.add_argument('--max-items', type=str, default='5',
                        help='Maximum number of screenshots to analyze (default: 5, use "all" for all screenshots)')
     return parser.parse_args()
@@ -100,4 +112,4 @@ if __name__ == "__main__":
     # Convert max_items to int if it's not 'all'
     max_items = args.max_items if args.max_items == 'all' else int(args.max_items)
     import asyncio
-    asyncio.run(main(max_items=max_items)) 
+    asyncio.run(main(section=args.section, max_items=max_items)) 

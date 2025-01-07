@@ -12,6 +12,8 @@ from src.services.footer_service import FooterService
 from src.types.screen import SearchOptions, ScreenAnalysis
 from src.services.db_service import DatabaseService
 from src.services.gemini_service import GeminiService
+from src.services.service_factory import ServiceFactory
+from src.types.screen import ScreenType
 
 # Configure logging
 logging.basicConfig(
@@ -32,17 +34,18 @@ if not all([SUPABASE_URL, SUPABASE_KEY, GEMINI_API_KEY]):
     logger.error("Missing required environment variables. Please check .env file")
     sys.exit(1)
 
-async def search_similar_footers(
+async def search_similar_sections(
     db_service: DatabaseService,
-    footer_service: FooterService,
+    service: FooterService,
     target_url: str,
+    section: str,
     search_layout: bool = True,
     search_color: bool = True,
     weight_layout: float = 0.5,
     weight_color: float = 0.5,
     limit: int = 5
 ):
-    """Search for similar footers"""
+    """Search for similar sections"""
     try:
         # Get target screen analysis
         target_analysis = await db_service.get_analysis_by_url(target_url)
@@ -67,7 +70,7 @@ async def search_similar_footers(
         )
         
         # Get similar screens
-        results = await footer_service.search_similar(target_screen, options)
+        results = await service.search_similar(target_screen, options)
         
         # Print results
         logger.info(f"\nResults for {target_url}:")
@@ -84,12 +87,13 @@ async def search_similar_footers(
                 logger.info(f"Color Score: {result.color_score:.3f}")
 
     except Exception as e:
-        logger.error(f"Error searching similar footers: {str(e)}")
+        logger.error(f"Error searching similar sections: {str(e)}")
         logger.debug(traceback.format_exc())
         raise
 
 async def main(
     target_url: str,
+    section: str,
     search_layout: bool = True,
     search_color: bool = True,
     weight_layout: float = 0.6,
@@ -104,13 +108,25 @@ async def main(
         # Initialize services
         db_service = DatabaseService(supabase)
         gemini_service = GeminiService(GEMINI_API_KEY)
-        footer_service = FooterService(gemini_service=gemini_service, db_service=db_service)
+        
+        # Get appropriate service based on section
+        try:
+            section_type = ScreenType(section)
+            service = ServiceFactory.get_service(
+                section_type,
+                gemini_service=gemini_service,
+                db_service=db_service
+            )
+        except ValueError as e:
+            logger.error(f"Invalid section type: {section}")
+            return
         
         # Search
-        await search_similar_footers(
+        await search_similar_sections(
             db_service,
-            footer_service,
+            service,
             target_url=target_url,
+            section=section,
             search_layout=search_layout,
             search_color=search_color,
             weight_layout=weight_layout,
@@ -124,8 +140,11 @@ async def main(
         sys.exit(1)
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Footer similarity search tool')
-    parser.add_argument('--target_url', help='URL of the target footer screenshot')
+    parser = argparse.ArgumentParser(description='Section similarity search tool')
+    parser.add_argument('--target_url', required=True,
+                       help='URL of the target screenshot')
+    parser.add_argument('--section', type=str, required=True,
+                       help='Section type to search (footer, above the fold, etc)')
     parser.add_argument('--no-layout', action='store_true',
                        help='Disable layout similarity search')
     parser.add_argument('--no-color', action='store_true',
@@ -143,6 +162,7 @@ if __name__ == "__main__":
     import asyncio
     asyncio.run(main(
         target_url=args.target_url,
+        section=args.section,
         search_layout=not args.no_layout,
         search_color=not args.no_color,
         weight_layout=args.weight_layout,

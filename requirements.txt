@@ -1,0 +1,8 @@
+python-dotenv
+openai==1.12.0
+supabase
+google-generativeai>=0.3.0
+opencv-python
+numpy
+requests
+Pillow

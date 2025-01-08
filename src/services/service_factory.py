@@ -1,6 +1,7 @@
 from typing import Optional
 from .footer_service import FooterService
 from .above_the_fold_service import AboveTheFoldService
+from .testimonials_service import TestimonialsService
 from .screen_service import ScreenService
 from ..types.screen import ScreenType
 
@@ -18,6 +19,11 @@ class ServiceFactory:
                 )
             elif section_type == ScreenType.ABOVE_THE_FOLD:
                 cls._services[section_type] = AboveTheFoldService(
+                    gemini_service=gemini_service,
+                    db_service=db_service
+                )
+            elif section_type == ScreenType.TESTIMONIALS:
+                cls._services[section_type] = TestimonialsService(
                     gemini_service=gemini_service,
                     db_service=db_service
                 )

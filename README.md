@@ -1,6 +1,6 @@
 # Screen Analysis Tools
 
-Tools for analyzing and searching similar website sections (footer, above the fold, etc).
+Tools for analyzing and searching similar website sections (footer, above the fold, testimonials, etc).
 
 ## Setup
 
@@ -40,13 +40,14 @@ Usage:
 # Process specific section type
 python label.py --section "footer" --max-items 10
 python label.py --section "above the fold" --max-items 5
+python label.py --section "testimonials" --max-items 5
 
 # Process all unprocessed screenshots for a section
 python label.py --section "footer" --max-items all
 ```
 
 Parameters:
-- `--section`: Type of section to process (footer, above the fold)
+- `--section`: Type of section to process (footer, above the fold, testimonials)
 - `--max-items`: Number of screenshots to process (default: 5, use "all" for all screenshots)
 
 ## Searching Similar Sections
@@ -61,6 +62,9 @@ python search.py --target_url example.com/footer.webp --section "footer"
 # Search above the fold sections
 python search.py --target_url example.com/hero.webp --section "above the fold"
 
+# Search testimonials sections
+python search.py --target_url example.com/testimonials.webp --section "testimonials"
+
 # Search with layout only
 python search.py --target_url example.com/footer.webp --section "footer" --no-color
 
@@ -73,30 +77,12 @@ python search.py --target_url example.com/footer.webp --section "footer" --weigh
 
 Parameters:
 - `target_url`: URL of the target screenshot
-- `section`: Type of section to search (footer, above the fold)
+- `section`: Type of section to search (footer, above the fold, testimonials)
 - `--no-layout`: Disable layout similarity search
 - `--no-color`: Disable color similarity search
 - `--weight-layout`: Weight for layout similarity (default: 0.7)
 - `--weight-color`: Weight for color similarity (default: 0.3)
 - `--limit`: Maximum number of results to show (default: 5)
-
-## Updating Color Embeddings
-
-If you need to update the color embeddings:
-
-1. Update schema:
-```bash
-python scripts/update_color_schema.py
-```
-
-2. Update embeddings:
-```bash
-# Update all records
-python scripts/update_color_embeddings.py
-
-# Update specific number of records
-python scripts/update_color_embeddings.py --max-items 10
-```
 
 ## Project Structure
 ```
@@ -116,13 +102,11 @@ screen_relative/
 │       ├── screen_service.py  # Generic screen analysis service
 │       ├── footer_service.py  # Footer-specific service
 │       ├── above_the_fold_service.py # Above the fold service
+│       ├── testimonials_service.py   # Testimonials service
 │       ├── service_factory.py # Service factory for different sections
 │       ├── db_service.py      # Database operations
 │       └── gemini_service.py  # Gemini API service
-├── scripts/
-│   ├── update_color_schema.py    # Update color embedding schema
-│   └── update_color_embeddings.py # Update color embeddings
-├── requirements.txt              # Project dependencies
-├── label.py                     # Screenshot labeling script
-└── search.py                    # Similar section search script
+├── requirements.txt           # Project dependencies
+├── label.py                  # Screenshot labeling script
+└── search.py                 # Similar section search script
 ``` 

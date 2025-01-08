@@ -201,7 +201,131 @@ Example output for your above-the-fold section:
 }
 """
 
+TESTIMONIALS_PROMPT = """
+Analyze the testimonials section of the screenshot and provide a structured JSON output describing its layout, including content positioning and structure of testimonial items.
+
+Expected output format:
+{
+  "layout": {
+    "rows": [
+      {
+        "rowIndex": 1,
+        "content": [
+          {
+            "name": "header",
+            "position": "center/left/right",
+            "width": "full/half/third"
+          }
+        ]
+      },
+      {
+        "rowIndex": 2,
+        "content": [
+          {
+            "name": "testimonials-grid",
+            "position": "center",
+            "width": "full",
+            "columns": 1-4
+          }
+        ]
+      }
+    ]
+  },
+  "content": {
+    "header": {
+      "title": "",
+      "subtitle": ""
+    },
+    "testimonials": [
+      {
+        "type": "social-post",
+        "platform": "twitter/tiktok/youtube",
+        "author": {
+          "name": "",
+          "handle": "",
+          "avatar": "has_avatar/no_avatar"
+        },
+        "content": {
+          "text": "",
+          "media_type": "none/image/video",
+          "has_stats": true/false
+        },
+        "position": "column1/column2/etc"
+      }
+    ]
+  }
+}
+
+Example output for your testimonials section:
+{
+  "layout": {
+    "rows": [
+      {
+        "rowIndex": 1,
+        "content": [
+          {
+            "name": "header",
+            "position": "center",
+            "width": "full"
+          }
+        ]
+      },
+      {
+        "rowIndex": 2,
+        "content": [
+          {
+            "name": "testimonials-grid",
+            "position": "center",
+            "width": "full",
+            "columns": 3
+          }
+        ]
+      }
+    ]
+  },
+  "content": {
+    "header": {
+      "title": "Wall of 💛",
+      "subtitle": "Buy Me a Coffee has been around since late 2017, so about seven-ish years. We've been lucky enough to serve over a million creators. Here are some of the recent social media mentions about us."
+    },
+    "testimonials": [
+      {
+        "type": "social-post",
+        "platform": "twitter",
+        "author": {
+          "name": "Kevin Chee",
+          "handle": "@kev_chee",
+          "avatar": "has_avatar"
+        },
+        "content": {
+          "text": "Used #BuyMeACoffee as a YouTuber, and in just 2 weeks, made $80! The site's a breeze - simple, straightforward, breaks down the barriers for your audience to support you. Who knew strangers could buy you a coffee?",
+          "media_type": "none",
+          "has_stats": false
+        },
+        "position": "column1"
+      },
+      {
+        "type": "social-post",
+        "platform": "tiktok",
+        "author": {
+          "name": "jessicahorneart",
+          "handle": "@jessicahorneart",
+          "avatar": "has_avatar"
+        },
+        "content": {
+          "text": "",
+          "media_type": "video",
+          "has_stats": true
+        },
+        "position": "column2"
+      }
+    ]
+  }
+}
+"""
+
 SCREEN_PROMPTS = {
     ScreenType.FOOTER: FOOTER_PROMPT,
-    ScreenType.ABOVE_THE_FOLD: ABOVE_THE_FOLD_PROMPT
+    ScreenType.ABOVE_THE_FOLD: ABOVE_THE_FOLD_PROMPT,
+    ScreenType.TESTIMONIALS: TESTIMONIALS_PROMPT
 } 

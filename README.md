@@ -31,6 +31,21 @@ SUPABASE_KEY=your_supabase_key
 GEMINI_API_KEY=your_gemini_key
 ```
 
+## Updating Data
+
+The update script helps maintain and update related_screen_ids the database:
+
+```bash
+# Update specific
+python update.py --mode specific
+
+# Update general
+python update.py --mode general
+```
+
+Parameters:
+- `--mode`: Update mode (color, layout, or all)
+
 ## Labeling Screenshots
 
 The labeling script analyzes screenshots and stores their layout and color embeddings.
@@ -70,6 +85,9 @@ python search.py --target_url example.com/footer.webp --section "footer" --no-la
 
 # Adjust weights and limit results
 python search.py --target_url example.com/footer.webp --section "footer" --weight-layout 0.7 --weight-color 0.3 --limit 10
+
+# Search with specific model
+python search.py --target_url example.com/footer.webp --section "footer" --model "gpt-4"
 ```
 
 ### General Mode
@@ -93,6 +111,7 @@ Parameters:
 - `--weight-layout`: Weight for layout similarity (specific mode only, default: 0.7)
 - `--weight-color`: Weight for color similarity (specific mode only, default: 0.3)
 - `--limit`: Maximum number of results to show (default: 5)
+- `--model`: OpenAI model to use (default: gpt-3.5-turbo)
 
 ## Project Structure
 ```
@@ -116,7 +135,11 @@ screen_relative/
 │       ├── service_factory.py # Service factory for different sections
 │       ├── db_service.py      # Database operations
 │       └── gemini_service.py  # Gemini API service
+├── scripts/
+│   ├── update_color_embeddings.py    # Script to update color embeddings
+│   └── update_color_schema.py        # Script to update color schema
 ├── requirements.txt           # Project dependencies
 ├── label.py                  # Screenshot labeling script
-└── search.py                 # Similar section search script
+├── search.py                 # Similar section search script
+└── update.py                 # Database update script
 ``` 

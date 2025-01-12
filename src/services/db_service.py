@@ -74,9 +74,10 @@ class DatabaseService:
         try:
             # Get screenshots from screens table that haven't been processed in relative_screen
             query = self.supabase.table('screens')\
-                .select('id, img_url, section, site_url')\
+                .select('id, img_url, section, site_url, date')\
                 .eq('section', section)\
                 .not_.eq('is_public', False)\
+                .lte('date', '2024-11-27')\
                 .order('date', desc=True)
             
             if max_items:
@@ -201,3 +202,57 @@ class DatabaseService:
             .not_('section', 'is', None)\
             .execute()
         return list(set(item['section'] for item in result.data)) 
+
+    async def get_all_unprocessed_screenshots(self, max_items: Optional[int] = None):
+        """Get all unprocessed screenshots without filtering by section"""
+        try:
+            # Get screenshots from screens table that haven't been processed in relative_screen
+            query = self.supabase.table('screens')\
+                .select('id, img_url, section, site_url, date')\
+                .not_.eq('is_public', False)\
+                .lte('date', '2024-11-27')\
+                .order('date', desc=True)
+            
+            if max_items:
+                query = query.limit(max_items)
+                
+            result = query.execute()
+            
+            if not result.data:
+                return []
+            
+            # Format data
+            formatted_data = []
+            for item in result.data:
+                # Check if already processed
+                processed = self.supabase.table('relative_screen')\
+                    .select('id')\
+                    .eq('screen_id', item['id'])\
+                    .execute()
+                
+                if not processed.data:  # Only include if not processed
+                    formatted_data.append({
+                        "screen_id": item['id'],
+                        "img_url": self.get_storage_url(item['img_url']),
+                        "original_img_url": item['img_url'],
+                        "site_url": item['site_url'],
+                        "section": item['section']
+                    })
+            
+            return formatted_data
+
+        except Exception as e:
+            logger.error(f"Error getting unprocessed screenshots: {str(e)}")
+            raise 
+
+    async def update_screen_related_ids(self, screen_id: int, related_ids: List[int]):
+        """Update related screen IDs for a specific screen"""
+        try:
+            response = self.supabase.table('relative_screen')\
+                .update({'screen_related_ids': related_ids})\
+                .eq('id', screen_id)\
+                .execute()
+            return response.data
+        except Exception as e:
+            logger.error(f"Error updating related screen IDs: {str(e)}")
+            raise 

@@ -16,6 +16,4 @@ typescript => app giao diện => set grid 1/3
 bỏ dữ liệu screen 12/20
 
 
-đổi prompt html
-tìm cách embedding tốt hơn
-thêm general screen
+tìm cách embedding color tốt hơn

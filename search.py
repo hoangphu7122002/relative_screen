@@ -8,13 +8,11 @@ from typing import Optional
 import argparse
 import traceback
 
-from src.services.footer_service import FooterService
 from src.types.screen import SearchOptions, ScreenAnalysis
 from src.services.db_service import DatabaseService
 from src.services.gemini_service import GeminiService
 from src.services.service_factory import ServiceFactory
 from src.types.screen import ScreenType
-from src.utils.embeddings import EmbeddingProcessor
 
 # Configure logging
 logging.basicConfig(
@@ -37,7 +35,7 @@ if not all([SUPABASE_URL, SUPABASE_KEY, GEMINI_API_KEY]):
 
 async def search_similar_sections(
     db_service: DatabaseService,
-    service: FooterService,
+    service,
     target_url: str,
     section: str,
     search_layout: bool = True,

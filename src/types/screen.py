@@ -33,6 +33,7 @@ class SearchOptions(BaseModel):
     search_color: bool = True
     weight_layout: float = 0.5
     weight_color: float = 0.5
+    limit: int = 5
 
 class SearchResult(BaseModel):
     screen: ScreenAnalysis

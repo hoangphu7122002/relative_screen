@@ -9,8 +9,7 @@ import traceback
 
 from src.services.db_service import DatabaseService
 from src.services.gemini_service import GeminiService
-from src.services.service_factory import ServiceFactory
-from src.types.screen import ScreenType
+from src.services.screen_service import ScreenService
 
 # Configure logging
 logging.basicConfig(
@@ -32,40 +31,24 @@ if not all([SUPABASE_URL, SUPABASE_KEY, GEMINI_API_KEY, OPENAI_API_KEY]):
     logger.error("Missing required environment variables. Please check .env file")
     sys.exit(1)
 
-async def main(section: str, max_items: Union[int, str] = 5):
-    """Main execution function"""
+async def process_section(section: str, db_service: DatabaseService, gemini_service: GeminiService, max_items: Optional[int] = None):
+    """Process a single section"""
     try:
-        # Initialize clients
-        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-        
-        # Initialize services
-        db_service = DatabaseService(supabase)
-        gemini_service = GeminiService(GEMINI_API_KEY)
-        
-        # Get appropriate service based on section
-        try:
-            section_type = ScreenType(section)
-            service = ServiceFactory.get_service(
-                section_type,
-                gemini_service=gemini_service,
-                db_service=db_service
-            )
-        except ValueError as e:
-            logger.error(f"Invalid section type: {section}")
-            return
-        
-        # Create table if needed
-        if not db_service.create_screen_section_analysis_table():
-            return
-        
+        # Initialize screen service directly
+        service = ScreenService(
+            section=section,  # Pass section as string directly
+            gemini_service=gemini_service,
+            db_service=db_service
+        )
+
         # Get unprocessed screenshots
-        data = await db_service.get_unprocessed_screenshots(section, None if max_items == 'all' else max_items)
+        data = await db_service.get_unprocessed_screenshots(section, max_items)
         
         if not data:
-            logger.info("No unprocessed screenshots found")
+            logger.info(f"No unprocessed screenshots found for section: {section}")
             return
             
-        logger.info(f"Found {len(data)} unprocessed screenshots")
+        logger.info(f"Found {len(data)} unprocessed screenshots for section: {section}")
         
         # Process screenshots
         for idx, item in enumerate(data, 1):
@@ -95,6 +78,47 @@ async def main(section: str, max_items: Union[int, str] = 5):
                 logger.debug(traceback.format_exc())
 
     except Exception as e:
+        logger.error(f"Error processing section {section}: {str(e)}")
+        logger.debug(traceback.format_exc())
+
+async def main(section: str, max_items: Union[int, str] = 5):
+    """Main execution function"""
+    try:
+        # Initialize clients and services
+        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+        db_service = DatabaseService(supabase)
+        gemini_service = GeminiService(GEMINI_API_KEY)
+
+        # Create table if needed
+        if not db_service.create_screen_section_analysis_table():
+            return
+
+        if section.lower() == 'all':
+            # Get all unique sections from database
+            sections = await db_service.get_all_sections()
+            logger.info(f"Found {len(sections)} sections to process: {', '.join(sections)}")
+            
+            # Process each section
+            for section_name in sections:
+                logger.info(f"\n{'='*50}")
+                logger.info(f"Processing section: {section_name}")
+                logger.info(f"{'='*50}")
+                await process_section(
+                    section_name,
+                    db_service,
+                    gemini_service,
+                    max_items
+                )
+        else:
+            # Process specific section
+            await process_section(
+                section,
+                db_service,
+                gemini_service,
+                max_items
+            )
+
+    except Exception as e:
         logger.error(f"Error in main execution: {str(e)}")
         logger.debug(traceback.format_exc())
         sys.exit(1)
@@ -102,14 +126,12 @@ async def main(section: str, max_items: Union[int, str] = 5):
 def parse_args():
     parser = argparse.ArgumentParser(description='Screenshot analysis and labeling tool')
     parser.add_argument('--section', type=str, required=True,
-                       help='Section type to process (footer, above the fold, etc)')
-    parser.add_argument('--max-items', type=str, default='5',
-                       help='Maximum number of screenshots to analyze (default: 5, use "all" for all screenshots)')
+                       help='Section type to process (any section name or "all")')
+    parser.add_argument('--max-items', type=str, default='all',
+                       help='Maximum number of screenshots to analyze (default: all)')
     return parser.parse_args()
 
 if __name__ == "__main__":
     args = parse_args()
-    # Convert max_items to int if it's not 'all'
-    max_items = args.max_items if args.max_items == 'all' else int(args.max_items)
     import asyncio
-    asyncio.run(main(section=args.section, max_items=max_items)) 
+    asyncio.run(main(section=args.section, max_items=args.max_items)) 

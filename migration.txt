@@ -26,3 +26,6 @@ begin
   limit match_count;
 end;
 $$;
+
+ALTER TABLE collection_screens 
+ALTER COLUMN layout_data TYPE TEXT;

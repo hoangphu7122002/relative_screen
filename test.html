@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Analysis</title>
+    <style>
+        /* Basic CSS for layout and positioning purposes */
+        section[data-section-type] {
+          margin-bottom: 20px;
+        }
+        [data-position="left"] {
+            text-align: left;
+        }
+        [data-position="center"] {
+            text-align: center;
+        }
+        [data-position="right"] {
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+         <section data-section-type="header-navigation">
+            <div data-position="left">
+               <img src="/crisp-logo.svg" alt="crisp logo">
+            </div>
+            <nav data-position="center">
+                <a href="#">Features</a>
+                <a href="#">Apps</a>
+                <a href="#">Pricing</a>
+                <a href="#">Integrations</a>
+                 <a href="#">Help</a>
+            </nav>
+             <div data-position="right">
+                 <input type="text" placeholder="Search our website">
+                <a href="#">Log In</a>
+                <button>Get Started</button>
+             </div>
+         </section>
+    </header>
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section data-section-type="hero">
+            <div data-position="center">
+                <span style="color: blue">NEW</span> <a href="#">The new Crisp v4 is out! &gt;</a>
+                <h1>The future of customer support is here</h1>
+                <p>The all-in-one AI-powered business messaging platform that gathers teams, conversations, data and knowledge, around one place.</p>
+                <button>Use Crisp for free</button>
+                <button>What is Crisp?</button>
+                <p>14 days free trial — No commitment</p>
+            </div>
+        </section>
+
+        <!-- Main Dashboard Section-->
+         <section data-section-type="dashboard-view">
+           <div data-position="left">
+              <!-- Inbox Side Panel -->
+              <section data-section-type="inbox-side-panel">
+                  <div>
+                    <img src="/acme-logo.svg" alt="Acme logo">
+                     <p>Acme</p>
+                     <p>www.acme.com</p>
+                  </div>
+                 <div>
+                    <p>Inbox</p>
+                     <p>Default Inboxes</p>
+                       <ul>
+                         <li>Main Inbox</li>
+                         <li>Assigned to me</li>
+                       </ul>
+                     </div>
+                    <div>
+                        <p>Your Inboxes</p>
+                        <ul>
+                            <li>N1-Support Escala...</li>
+                            <li>Accountability</li>
+                            <li>VIP Customers</li>
+                        </ul>
+                    </div>
+                     <div>
+                        <p>Other Inboxes</p>
+                       <ul>
+                            <li>Spam</li>
+                            <li>Visitors</li>
+                            <li>Contacts</li>
+                            <li>Campaigns</li>
+                            <li>Helpdesk</li>
+                       </ul>
+                    </div>
+              </section>
+           </div>
+            <div data-position="center">
+             <!-- Main Conversation List -->
+            <section data-section-type="conversation-list">
+                <div>
+                 <select>
+                   <option>All</option>
+                 </select>
+                 <button>Filters</button>
+                 <button>+</button>
+                </div>
+                <ul>
+                   <li>
+                      <div>
+                         <img src="/beth-avatar.svg" alt="Beth's avatar">
+                         <div>
+                            <p>Beth > Lola</p>
+                            <p>Hello, I received a damaged product....</p>
+                         </div>
+                      </div>
+                       <span>Pending</span>
+                   </li>
+                   <li>
+                      <div>
+                         <img src="/jane-avatar.svg" alt="Jane's avatar">
+                         <div>
+                             <p>Jane</p>
+                             <p>Hi, I accidentally deleted some imp...</p>
+                         </div>
+                      </div>
+                      
+                   </li>
+                    <li>
+                      <div>
+                         <img src="/marvin-avatar.svg" alt="Marvin's avatar">
+                        <div>
+                           <p>Marvin</p>
+                            <p>Hey there, I received an email from...</p>
+                         </div>
+                     </div>
+                    </li>
+                     <li>
+                      <div>
+                         <img src="/jean-avatar.svg" alt="Jean's avatar">
+                        <div>
+                          <p>Jean > Arlene</p>
+                          <p>No problem, I've prescribed 25m...</p>
+                        </div>
+                     </div>
+                     </li>
+                     <li>
+                       <div>
+                          <img src="/paula-avatar.svg" alt="Paula's avatar">
+                           <div>
+                             <p>Paula > Cody</p>
+                             <p>Hello, I'm having trouble navigating t...</p>
+                           </div>
+                       </div>
+                     </li>
+                      <li>
+                        <div>
+                          <img src="/jerry-avatar.svg" alt="Jerry's avatar">
+                            <div>
+                               <p>Jerry > Gladys</p>
+                               <p>Hi Hanna, thank you for your rea....</p>
+                            </div>
+                        </div>
+                     </li>
+                    <li>
+                        <div>
+                            <img src="/kristin-avatar.svg" alt="Kristin's avatar">
+                            <div>
+                                <p>Kristin > Greg</p>
+                                <p>Hi, thank you for your message.....</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                       <div>
+                           <img src="/arthur-avatar.svg" alt="Arthur's avatar">
+                           <div>
+                               <p>Arthur Eduardo</p>
+                           </div>
+                       </div>
+                    </li>
+                 </ul>
+            </section>
+         </div>
+            <div data-position="right">
+              <!-- Conversation Details Panel -->
+              <section data-section-type="conversation-detail-panel">
+                <div>
+                   <img src="/beth-avatar.svg" alt="Beth's avatar">
+                    <div>
+                       <p>Beth Johnson</p>
+                        <p>beth@acme.com</p>
+                        <p>London</p>
+                    </div>
+                    <button>View Rosemary Profile</button>
+                </div>
+                <div>
+                  <p>Conversation Routing</p>
+                  <ul>
+                     <li>
+                       <img src="/lola-avatar.svg" alt="Lola's avatar">
+                       <p>Lola</p>
+                     </li>
+                  </ul>
+                  </div>
+                <div>
+                  <p>Main information</p>
+                    <ul>
+                      <li>
+                         <p>London, UK</p>
+                      </li>
+                      <li>
+                       <p>9:41am (UTC)</p>
+                      </li>
+                       <li>
+                        <img src="/uk-flag.svg" alt="UK flag">
+                      </li>
+                   </ul>
+                </div>
+                 <div>
+                 <p>Visitor device</p>
+                     <ul>
+                      <li>
+                          <p>Firefox 131 on Windows</p>
+                      </li>
+                      <li>
+                          <p>151.29.148.118</p>
+                      </li>
+                   </ul>
+                </div>
+                 <div>
+                 <p>Segments for conversation</p>
+                    <ul>
+                       <li>chat</li>
+                        <li>whatsapp</li>
+                        <li>2FA</li>
+                       <li>issue</li>
+                   </ul>
+                </div>
+                 <div>
+                    <p>Segment conversation...</p>
+                </div>
+                <div>
+                 <p>Visitor data</p>
+               </div>
+            </section>
+              <!-- Current Conversation -->
+             <section data-section-type="current-conversation">
+                <div>
+                    <p>Hello, I'm locked out of my account and need help disabling 2FA</p>
+                  </div>
+                  <div>
+                       <p>To proceed with disabling 2FA, could you please provide two forms of ID verification, like a government-issued ID and a recent transaction detail?</p>
+                       <span>Read</span>
+                  </div>
+                  <div>
+                        <img src="/shawn-file-icon.svg" alt="Shawn's file icon">
+                      <a href="#">shawn-id.zip</a>
+                      <button>Download file</button>
+                    </div>
+                    <div>
+                       <p>Lola left this private note: <br>
+                           <span style="color: blue;">@Alex</span>, confirm once this ID please</p>
+                    </div>
+                    <div>
+                        <p>Thanks for providing the details. I'll proceed with verifying your information now and will update you shortly on the 2FA status.</p>
+                        <span>Sent via whatsapp</span>
+                    </div>
+                  <button>Left a reminder</button>
+             </section>
+            </div>
+          </section>
+      <!-- Meet the workspace section-->
+      <section data-section-type="meet-workspace">
+          <div data-position="center">
+             <h2>Meet the workspace that</h2>
+          </div>
+      </section>
+        
+       <!-- Support Chat Window -->
+        <section data-section-type="support-chat">
+           <div data-position="right">
+             <button>X</button>
+             <p>Questions? Chat with us!</p>
+             <p>• Support is online</p>
+             <img src="/team-avatars.svg" alt="team avatars">
+             <button>Chat with Crisp</button>
+             <button>Q Search</button>
+         </div>
+         </section>
+    </main>
+     <!-- Footer -->
+    <footer>
+    </footer>
+</body>
+</html>

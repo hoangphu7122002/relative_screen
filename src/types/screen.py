@@ -4,11 +4,17 @@ from pydantic import BaseModel, Field
 
 class ScreenType(str, Enum):
     FOOTER = "footer"
-    HEADER = "header"
-    FAQ = "faq"
-    PRICING = "pricing"
     ABOVE_THE_FOLD = "above the fold"
     TESTIMONIALS = "testimonials"
+    FEATURES = "features"
+    MORE_FEATURES = "more features"
+    HOW_IT_WORKS = "how it works"
+    PRICING = "pricing"
+    COMPLEX_PRICING = "complex pricing"
+    FAQS = "FAQs"
+    LAST_CTA = "Last CTA"
+    BLOG = "Blog"
+    
 
 class ScreenAnalysis(BaseModel):
     id: Optional[int] = None
@@ -18,7 +24,7 @@ class ScreenAnalysis(BaseModel):
     img_url: str
     layout_embedding: List[float]
     color_embedding: List[float]
-    layout_data: Dict
+    layout_data: str
     created_at: Optional[str] = None
     updated_at: Optional[str] = None
 

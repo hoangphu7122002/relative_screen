@@ -193,3 +193,11 @@ class DatabaseService:
         except Exception as e:
             logger.error(f"Error updating analysis embedding: {str(e)}")
             raise 
+
+    async def get_all_sections(self):
+        """Get list of all unique sections from database"""
+        result = await self.supabase.table('screens')\
+            .select('section')\
+            .not_('section', 'is', None)\
+            .execute()
+        return list(set(item['section'] for item in result.data)) 

@@ -28,7 +28,10 @@ class EmbeddingProcessor:
     def _format_json_string(self, layout_data: Dict) -> str:
         """Convert layout JSON to formatted string"""
         try:
-            return json.dumps(layout_data, indent=2)
+            # Convert dict to JSON string if it's not already a string
+            if isinstance(layout_data, dict):
+                return json.dumps(layout_data)
+            return layout_data
         except Exception as e:
             logger.error(f"Error formatting JSON string: {str(e)}")
             return str(layout_data)

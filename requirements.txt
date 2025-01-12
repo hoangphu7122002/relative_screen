@@ -6,3 +6,16 @@ opencv-python
 numpy
 requests
 Pillow
+
+python search.py --target_url todesktop.com/20241011155039-CleanShot_2024-10-11_at_17.webp --section "testimonials" --weight-layout 0.7 --weight-color 0.3 --limit 10
+
+general similar
+html
+
+typescript => app giao diện => set grid 1/3
+bỏ dữ liệu screen 12/20
+
+
+đổi prompt html
+tìm cách embedding tốt hơn
+thêm general screen

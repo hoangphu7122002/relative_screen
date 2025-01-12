@@ -10,6 +10,7 @@ def calculate_cosine_similarity(vec1: List[float], vec2: List[float]) -> float:
     except Exception as e:
         return 0.0
 
+
 def calculate_histogram_similarity(hist1: List[float], hist2: List[float]) -> float:
     """Calculate similarity between two color histograms using Chi-Square distance"""
     try:

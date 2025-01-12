@@ -52,18 +52,15 @@ Parameters:
 
 ## Searching Similar Sections
 
-Search for similar sections based on layout and color patterns.
+Search for similar sections using two different modes:
+
+### Specific Mode (Default)
+Uses layout and color patterns for similarity search.
 
 Usage:
 ```bash
 # Basic search with default weights
 python search.py --target_url example.com/footer.webp --section "footer"
-
-# Search above the fold sections
-python search.py --target_url example.com/hero.webp --section "above the fold"
-
-# Search testimonials sections
-python search.py --target_url example.com/testimonials.webp --section "testimonials"
 
 # Search with layout only
 python search.py --target_url example.com/footer.webp --section "footer" --no-color
@@ -75,13 +72,26 @@ python search.py --target_url example.com/footer.webp --section "footer" --no-la
 python search.py --target_url example.com/footer.webp --section "footer" --weight-layout 0.7 --weight-color 0.3 --limit 10
 ```
 
+### General Mode
+Uses embeddings from screen analysis for similarity search.
+
+Usage:
+```bash
+# Search using screen analysis embeddings
+python search.py --target_url example.com/footer.webp --section "footer" --mode general
+
+# Limit results
+python search.py --target_url example.com/footer.webp --section "footer" --mode general --limit 10
+```
+
 Parameters:
 - `target_url`: URL of the target screenshot
 - `section`: Type of section to search (footer, above the fold, testimonials)
-- `--no-layout`: Disable layout similarity search
-- `--no-color`: Disable color similarity search
-- `--weight-layout`: Weight for layout similarity (default: 0.7)
-- `--weight-color`: Weight for color similarity (default: 0.3)
+- `--mode`: Search mode to use (specific or general, default: specific)
+- `--no-layout`: Disable layout similarity search (specific mode only)
+- `--no-color`: Disable color similarity search (specific mode only)
+- `--weight-layout`: Weight for layout similarity (specific mode only, default: 0.7)
+- `--weight-color`: Weight for color similarity (specific mode only, default: 0.3)
 - `--limit`: Maximum number of results to show (default: 5)
 
 ## Project Structure

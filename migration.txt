@@ -1,0 +1,28 @@
+create or replace function match_screen_embeddings(
+  query_embedding vector(1536),
+  match_threshold float,
+  match_count int,
+  section_type text
+)
+returns table (
+  screen_id int8,
+  webp_url text,
+  similarity float
+)
+language plpgsql
+as $$
+#variable_conflict use_column
+begin
+  return query
+  select
+    sa.screen_id,
+    sa.webp_url,
+    1 - (sa.embedding <=> query_embedding) as similarity
+  from screen_analysis sa
+  where sa.embedding is not null
+    and sa.section = section_type
+    and 1 - (sa.embedding <=> query_embedding) > match_threshold
+  order by similarity desc
+  limit match_count;
+end;
+$$;

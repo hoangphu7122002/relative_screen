@@ -29,5 +29,8 @@ $$;
 
 ALTER TABLE collection_screens 
 ALTER COLUMN layout_data TYPE TEXT;
-ALTER TABLE relative_screen ALTER COLUMN screen_related_ids jsonb DEFAULT '[]'::jsonb;
-ALTER TABLE screen_analysis ALTER COLUMN screen_related_ids jsonb DEFAULT '[]'::jsonb;
+ALTER TABLE relative_screen ADD COLUMN screen_related_ids jsonb DEFAULT '[]'::jsonb;
+
+ALTER TABLE relative_screen 
+ALTER COLUMN layout_embedding 
+SET DATA TYPE vector(512);

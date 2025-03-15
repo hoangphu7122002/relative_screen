@@ -25,11 +25,11 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Configuration
-SUPABASE_URL = os.getenv('SUPABASE_URL')
-SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+PUBLIC_SUPABASE_URL = os.getenv('PUBLIC_SUPABASE_URL')
+SUPABASE_SERVICE_ROLE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
-if not all([SUPABASE_URL, SUPABASE_KEY, GEMINI_API_KEY]):
+if not all([PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, GEMINI_API_KEY]):
     logger.error("Missing required environment variables. Please check .env file")
     sys.exit(1)
 
@@ -167,7 +167,7 @@ async def main(
     """Main execution function"""
     try:
         # Initialize clients
-        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+        supabase = create_client(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
         
         # Initialize services
         db_service = DatabaseService(supabase)

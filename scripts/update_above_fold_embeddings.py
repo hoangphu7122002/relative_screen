@@ -24,10 +24,10 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Configuration
-SUPABASE_URL = os.getenv('SUPABASE_URL')
-SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+PUBLIC_SUPABASE_URL = os.getenv('PUBLIC_SUPABASE_URL')
+SUPABASE_SERVICE_ROLE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
 
-if not all([SUPABASE_URL, SUPABASE_KEY]):
+if not all([PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY]):
     logger.error("Missing required environment variables")
     sys.exit(1)
 
@@ -77,7 +77,7 @@ async def main(max_items: int = None):
     """Main execution function"""
     try:
         # Initialize services
-        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+        supabase = create_client(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
         db_service = DatabaseService(supabase)
         embedding_processor = EmbeddingProcessor()
         

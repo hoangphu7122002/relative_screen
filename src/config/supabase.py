@@ -6,9 +6,9 @@ from supabase import create_client, Client
 load_dotenv()
 
 # Supabase configuration
-supabase_url = os.getenv("SUPABASE_URL")
-supabase_key = os.getenv("SUPABASE_KEY")
-supabase: Client = create_client(supabase_url, supabase_key)
+PUBLIC_SUPABASE_URL = os.getenv("PUBLIC_SUPABASE_URL")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+supabase: Client = create_client(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
 # OpenAI configuration
 openai_api_key = os.getenv("OPENAI_API_KEY")

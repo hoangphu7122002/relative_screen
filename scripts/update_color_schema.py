@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 
-SUPABASE_URL = os.getenv('SUPABASE_URL')
-SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+PUBLIC_SUPABASE_URL = os.getenv('PUBLIC_SUPABASE_URL')
+SUPABASE_SERVICE_ROLE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
 
-if not all([SUPABASE_URL, SUPABASE_KEY]):
+if not all([PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY]):
     logger.error("Missing required environment variables")
     sys.exit(1)
 
@@ -25,7 +25,7 @@ def update_color_embedding_schema():
     """Update color_embedding column in relative_screen table"""
     try:
         # Initialize Supabase client
-        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+        supabase = create_client(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
         
         # Execute SQL statements one by one
         # sql = """

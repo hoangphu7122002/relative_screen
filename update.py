@@ -28,11 +28,11 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Configuration
-SUPABASE_URL = os.getenv('SUPABASE_URL')
-SUPABASE_KEY = os.getenv('SUPABASE_KEY')
+PUBLIC_SUPABASE_URL = os.getenv('PUBLIC_SUPABASE_URL')
+SUPABASE_SERVICE_ROLE_KEY = os.getenv('SUPABASE_SERVICE_ROLE_KEY')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
-if not all([SUPABASE_URL, SUPABASE_KEY, GEMINI_API_KEY]):
+if not all([PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, GEMINI_API_KEY]):
     logger.error("Missing required environment variables")
     sys.exit(1)
 
@@ -153,7 +153,7 @@ async def update_related_screens(
     """Update related screens for all records based on mode"""
     try:
         # Initialize services
-        supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+        supabase = create_client(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
         db_service = DatabaseService(supabase)
         gemini_service = GeminiService(GEMINI_API_KEY)
         

@@ -26,8 +26,8 @@ pip install -r requirements.txt
 4. Configure environment variables in `.env`:
 ```
 OPENAI_API_KEY=your_openai_key
-SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_key
+PUBLIC_SUPABASE_URL=your_PUBLIC_SUPABASE_URL
+SUPABASE_SERVICE_ROLE_KEY=your_SUPABASE_SERVICE_ROLE_KEY
 GEMINI_API_KEY=your_gemini_key
 ```
 
